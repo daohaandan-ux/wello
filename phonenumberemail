@@ -1,32 +1,36 @@
 function submitForm() {
     const phone = document.getElementById("phone").value.trim();
     const email = document.getElementById("email").value.trim();
+    const errorBox = document.getElementById("errorBox");
+
+    // Reset message
+    errorBox.innerHTML = "";
 
     // --------------------------
-    // 1) PHONE NUMBER VALIDATION
+    // PHONE VALIDATION
     // --------------------------
     if (phone.length < 10) {
-        alert("Phone number must include at least 10 digits.");
+        errorBox.innerHTML = "📱 Phone number must contain at least 10 digits.";
         return;
     }
 
-    // Ensure phone number is digits only
     if (!/^[0-9]+$/.test(phone)) {
-        alert("Phone number should contain digits only.");
+        errorBox.innerHTML = "📱 Phone number must contain digits only.";
         return;
     }
 
     // --------------------------
-    // 2) EMAIL VALIDATION
+    // EMAIL VALIDATION
     // --------------------------
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
     if (!emailPattern.test(email)) {
-        alert("Please enter a valid email address.");
+        errorBox.innerHTML = "✉️ Please enter a valid email address.";
         return;
     }
 
     // --------------------------
-    // 3) IF VALID → SHOW WHEEL
+    // IF VALID — SHOW WHEEL
     // --------------------------
     document.getElementById("formBox").style.display = "none";
     document.getElementById("wheelBox").style.display = "block";
