@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spin to Win</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+}
+
+h2 {
+    font-weight: 600;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+button {
+    padding: 12px 25px;
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#spinBtn {
+    margin-top: 20px;
+}
+
+#wheelCanvas {
+    margin-top: 20px;
+}
+
+#resultBox {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>🎁 Spin to Win!</h2>
+    <p>Enter your info to unlock the wheel</p>
+
+    <div id="formBox">
+        <input type="text" id="phone" placeholder="Phone Number" />
+        <input type="email" id="email" placeholder="Email" />
+        <button onclick="submitForm()">Submit</button>
+    </div>
+
+    <div id="wheelBox" style="display:none;">
+        <canvas id="wheelCanvas" width="350" height="350"></canvas>
+        <button id="spinBtn" onclick="spinWheel()">SPIN</button>
+        <div id="resultBox"></div>
+    </div>
+</div>
+
+<!-- Wheel Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Winwheel.js/2.8.0/Winwheel.min.js"></script>
+
+<script>
+// -------------------------------
+// 1) PRIZES (15 slots)
+// -------------------------------
+const prizes = [
+    "Grand Prize",   // RIGGED → cannot win
+    "A",
+    "B",
+    "C",
+    "A",
+    "B",
+    "C",
+    "A",
+    "B",
+    "C",
+    "A",
+    "B",
+    "C",
+    "A",
+    "B"
+];
+
+// -------------------------------
+// 2) Create wheel
+// -------------------------------
+const wheel = new Winwheel({
+    canvasId: 'wheelCanvas',
+    numSegments: 15,
+    outerRadius: 160,
+    textFontSize: 14,
+    segments: prizes.map(p => ({ fillStyle: randomColor(), text: p })),
+    animation: {
+        type: 'spinToStop',
+        duration: 6,
+        spins: 10
+    }
+});
+
+// Random pastel color generator
+function randomColor() {
+    const pastel = `hsl(${Math.random()*360}, 70%, 75%)`;
+    return pastel;
+}
+
+// -------------------------------
+// 3) Unlock wheel after form submit
+// -------------------------------
+function submitForm() {
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+
+    if (!phone || !email) {
+        alert("Please enter both phone number and email!");
+        return;
+    }
+
+    // Hide form and show wheel
+    document.getElementById("formBox").style.display = "none";
+    document.getElementById("wheelBox").style.display = "block";
+}
+
+// -------------------------------
+// 4) SPIN BUTTON LOGIC
+// -------------------------------
+function spinWheel() {
+    let stopAt;
+
+    // Force it to NEVER stop on Grand Prize (index 0)
+    do {
+        stopAt = Math.floor(Math.random() * 15);
+    } while (stopAt === 0);
+
+    // Convert index to degrees
+    const segmentAngle = 360 / 15;
+    const stopAngle = (360 - (stopAt * segmentAngle)) + (segmentAngle / 2);
+
+    wheel.animation.stopAngle = stopAngle;
+    wheel.startAnimation();
+
+    setTimeout(() => {
+        document.getElementById("resultBox").innerHTML =
+            "🎉 You won: <b>" + prizes[stopAt] + "</b>";
+    }, 6500);
+}
+</script>
+</body>
+</html>
